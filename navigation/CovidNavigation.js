@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons, MaterialCommunityIcons } from "react-native-vector-icons";
 
+import HeatMapScreen from "../screen/HeatMapScreen";
 import HomeScreen from "../screen/HomeScreen";
 import InformationScreen from "../screen/InformationScreen";
 import StatisticsScreen from "../screen/StatisticsScreen";
@@ -68,19 +69,17 @@ const Navigation = () => (
         },
       }}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarBadgeStyle: {
-            width: "10px",
-            backgroundColor: "red",
-            height: "20px",
-          },
-        }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Statistics" component={StatisticsScreen} />
       <Tab.Screen name="Information" component={InformationScreen} />
+      <Tab.Screen
+        name="HeatMap"
+        component={HeatMapScreen}
+        options={{
+          tabBarButton: () => null,
+          tabBarVisible: false,
+        }}
+      />
     </Tab.Navigator>
   </NavigationContainer>
 );

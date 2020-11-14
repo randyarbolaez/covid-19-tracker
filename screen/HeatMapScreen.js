@@ -3,14 +3,14 @@ import { View, Text, Button, StyleSheet } from "react-native";
 
 import Color from "../constant/Color";
 
-const HomeScreen = (props) => {
+const HeatMapScreen = (props) => {
   return (
     <View style={styles.container}>
-      <Text>HomeScreen</Text>
+      <Text>HeatMapScreen</Text>
       <Button
-        title="HeatMap"
+        title="Home"
         onPress={() => {
-          props.navigation.navigate("HeatMap");
+          props.navigation.navigate("Home");
         }}
       />
     </View>
@@ -26,4 +26,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default HeatMapScreen;
