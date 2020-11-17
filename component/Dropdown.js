@@ -4,11 +4,10 @@ import { View, Text, Picker, StyleSheet } from "react-native";
 import Data from "../constant/Data";
 
 const Dropdown = () => {
-  let stateAndCounties = {};
-  const [results, setResults] = useState();
   const [state, setState] = useState("Alabama");
-  const [county, setCounty] = useState(Data[state][0]);
+  const [county, setCounty] = useState("Autauga");
   const [countyStats, setCountyStats] = useState("");
+  const [stateStats, setStateStats] = useState("");
 
   const getCorrectCountyStats = (countiesWithTheSameName) => {
     for (let i = 0; i < countiesWithTheSameName.length; i++) {
@@ -17,13 +16,19 @@ const Dropdown = () => {
       }
     }
   };
+
+  const getData = () => {
+    fetch(`https://disease.sh/v3/covid-19/states/${state}`)
+      .then((res) => res.json())
+      .then((stats) => setStateStats(stats));
+    fetch(`https://disease.sh/v3/covid-19/jhucsse/counties/${county}`)
+      .then((res) => res.json())
+      .then((stats) => getCorrectCountyStats(stats));
+  };
+
   useEffect(() => {
-    return () => {
-      fetch(`https://disease.sh/v3/covid-19/jhucsse/counties/${county}`)
-        .then((res) => res.json())
-        .then((stats) => getCorrectCountyStats(stats));
-    };
-  }, [state, county, countyStats]);
+    return getData();
+  }, [state, county]);
 
   return (
     <View style={styles.container}>
@@ -54,6 +59,12 @@ const Dropdown = () => {
         </Text>
         <Text>Deaths:{countyStats.deaths ? countyStats.deaths : "-"}</Text>
         <Text>Recovered: -</Text>
+        <Text>State v</Text>
+        <Text>Confirmed:{stateStats.cases ? stateStats.cases : "-"}</Text>
+        <Text>Deaths:{stateStats.deaths ? stateStats.deaths : "-"}</Text>
+        <Text>
+          Recovered: {stateStats.recovered ? stateStats.recovered : "-"}
+        </Text>
       </View>
     </View>
   );
@@ -62,7 +73,6 @@ const Dropdown = () => {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    // flex: 1,
     flexDirection: "row",
   },
 });
