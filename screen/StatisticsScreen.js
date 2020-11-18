@@ -8,7 +8,6 @@ import Color from "../constant/Color";
 const StatisticsScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>StatisticsScreen</Text>
       <Dropdown />
     </View>
   );
