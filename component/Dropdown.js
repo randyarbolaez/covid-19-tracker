@@ -40,7 +40,10 @@ const Dropdown = () => {
       <View style={styles.wrapper}>
         <Picker
           selectedValue={state}
-          style={{ height: 50, width: 100 }}
+          style={{
+            height: 50,
+            width: 100,
+          }}
           onValueChange={(itemValue, itemIndex) => {
             setCounty(Data[itemValue][0]);
             setState(itemValue);
@@ -76,6 +79,7 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   wrapper: {
+    height: "50%",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "baseline",
