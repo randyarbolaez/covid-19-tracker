@@ -1,31 +1,16 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-const Statistics = ({ stateStats, countyStats, countryStats }) => {
+const Statistics = ({ stats }) => {
+  let { cases = null, confirmed = null } = stats;
+  let { deaths, recovered } = stats;
+
   return (
     <View style={styles.container}>
       <View style={styles.wrapper}>
-        <View>
-          <Text>Confirmed:{stateStats.cases ? stateStats.cases : "-"}</Text>
-          <Text>Deaths:{stateStats.deaths ? stateStats.deaths : "-"}</Text>
-          <Text>
-            Recovered: {stateStats.recovered ? stateStats.recovered : "-"}
-          </Text>
-        </View>
-        <View>
-          <Text>
-            Confirmed:{countyStats.confirmed ? countyStats.confirmed : "-"}
-          </Text>
-          <Text>Deaths:{countyStats.deaths ? countyStats.deaths : "-"}</Text>
-          <Text>Recovered: -</Text>
-        </View>
-      </View>
-      <View style={styles.countryStatsWrapperText}>
-        <Text>Confirmed:{countryStats.cases ? countryStats.cases : "-"}</Text>
-        <Text>Deaths:{countryStats.deaths ? countryStats.deaths : "-"}</Text>
-        <Text>
-          Recovered: {countryStats.recovered ? countryStats.recovered : "-"}
-        </Text>
+        <Text>Confirmed:{cases || confirmed ? cases || confirmed : "-"}</Text>
+        <Text>Deaths:{deaths ? deaths : "-"}</Text>
+        <Text>Recovered: {recovered ? recovered : "-"}</Text>
       </View>
     </View>
   );
@@ -37,11 +22,8 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  countryStatsWrapperText: {
+    justifyContent: "space-around",
     alignItems: "center",
-    marginTop: "5%",
   },
 });
 
