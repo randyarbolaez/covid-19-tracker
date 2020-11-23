@@ -4,6 +4,8 @@ import { View, Text, Picker, StyleSheet } from "react-native";
 import Data from "../constant/Data";
 import Statistics from "./Statistics";
 
+import Color from "../constant/Color";
+
 const Dropdown = () => {
   const [state, setState] = useState("Alabama");
   const [county, setCounty] = useState("Autauga");
@@ -37,38 +39,73 @@ const Dropdown = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.wrapper}>
+      <View style={styles.stateWrapper}>
         <Picker
           selectedValue={state}
           style={{
-            height: 50,
-            width: 100,
+            backgroundColor: Color.blue,
+            height: 80,
+            width: "100%",
+            paddingTop: "3%",
+            borderTopRightRadius: "50%",
+            borderBottomRightRadius: "50%",
           }}
           onValueChange={(itemValue, itemIndex) => {
             setCounty(Data[itemValue][0]);
             setState(itemValue);
           }}
+          itemStyle={{
+            height: 63,
+            fontSize: 42,
+          }}
         >
           {Object.keys(Data).map((state) => {
-            return <Picker.Item label={state} value={state} key={state} />;
-          })}
-        </Picker>
-
-        <Picker
-          selectedValue={county}
-          style={{ height: 50, width: 100 }}
-          onValueChange={(itemValue, itemIndex) => setCounty(itemValue)}
-        >
-          {Data[state].map((county) => {
-            return <Picker.Item label={county} value={county} key={county} />;
+            return (
+              <Picker.Item
+                label={state}
+                value={state}
+                key={state}
+                color={Color.white}
+              />
+            );
           })}
         </Picker>
       </View>
-      <Statistics
-        countyStats={countyStats}
-        stateStats={stateStats}
-        countryStats={countryStats}
-      />
+      <Statistics stats={stateStats} />
+      <View style={styles.countyWrapper}>
+        <Picker
+          selectedValue={county}
+          style={{
+            backgroundColor: Color.blue,
+            height: 60,
+            width: "100%",
+            paddingBottom: "20%",
+            borderColor: Color.blue,
+            borderWidth: "4%",
+            borderRadius: "50%",
+          }}
+          itemStyle={{
+            height: 50,
+            fontSize: 30,
+          }}
+          onValueChange={(itemValue, itemIndex) => setCounty(itemValue)}
+        >
+          {Data[state].map((county) => {
+            return (
+              <Picker.Item
+                label={county}
+                value={county}
+                key={county}
+                color={Color.white}
+              />
+            );
+          })}
+        </Picker>
+      </View>
+      <Statistics stats={countyStats} />
+      <View style={styles.countryWrapper}>
+        <Statistics stats={countryStats} country={true} />
+      </View>
     </View>
   );
 };
@@ -76,14 +113,37 @@ const Dropdown = () => {
 const styles = StyleSheet.create({
   container: {
     display: "flex",
-    width: "80%",
+    height: "80%",
   },
-  wrapper: {
-    height: "50%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "baseline",
+  stateWrapper: {
+    width: "90%",
+    marginRight: "10%",
+    height: "20%",
+  },
+  countyWrapper: {
+    width: "80%",
+    height: "17%",
+    marginHorizontal: "10%",
+    marginTop: 30,
+  },
+  countryWrapper: {
+    marginTop: 10,
+    paddingHorizontal: 10,
+    backgroundColor: Color.lightGrey,
+    height: "100%",
+    paddingTop: 20,
+    borderRadius: 25,
   },
 });
 
 export default Dropdown;
+
+// <Text></Text>
+// <Text>State</Text>
+// <Statistics stats={stateStats} />
+// <Text></Text>
+// <Text>County</Text>
+// <Statistics stats={countyStats} />
+// <Text></Text>
+// <Text>Country</Text>
+// <Statistics stats={countryStats} />
