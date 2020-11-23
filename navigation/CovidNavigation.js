@@ -37,7 +37,7 @@ const Navigation = () => (
                 flexDirection: "row",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: `${focused ? "#007aff" : Color.background}`,
+                backgroundColor: `${focused ? Color.blue : Color.white}`,
                 width: "50%",
                 height: "85%",
                 borderRadius: 100,
@@ -47,13 +47,13 @@ const Navigation = () => (
                 <MaterialCommunityIcons
                   name={iconName}
                   size={30}
-                  color={focused ? Color.background : color}
+                  color={focused ? Color.white : color}
                 />
               ) : (
                 <Ionicons
                   name={iconName}
                   size={30}
-                  color={focused ? Color.background : color}
+                  color={focused ? Color.white : color}
                 />
               )}
             </View>

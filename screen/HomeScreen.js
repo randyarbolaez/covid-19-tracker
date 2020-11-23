@@ -19,7 +19,7 @@ const HomeScreen = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Color.background,
+    backgroundColor: Color.white,
     flex: 1,
     justifyContent: "center",
     alignItems: "center",

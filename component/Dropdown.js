@@ -65,7 +65,7 @@ const Dropdown = () => {
                 label={state}
                 value={state}
                 key={state}
-                color={Color.background}
+                color={Color.white}
               />
             );
           })}
@@ -96,16 +96,16 @@ const Dropdown = () => {
                 label={county}
                 value={county}
                 key={county}
-                color={Color.background}
+                color={Color.white}
               />
             );
           })}
         </Picker>
       </View>
       <Statistics stats={countyStats} />
-      <Text></Text>
-      <Text>Country</Text>
-      <Statistics stats={countryStats} />
+      <View style={styles.countryWrapper}>
+        <Statistics stats={countryStats} country={true} />
+      </View>
     </View>
   );
 };
@@ -125,6 +125,14 @@ const styles = StyleSheet.create({
     height: "17%",
     marginHorizontal: "10%",
     marginTop: 30,
+  },
+  countryWrapper: {
+    marginTop: 10,
+    paddingHorizontal: 10,
+    backgroundColor: Color.lightGrey,
+    height: "100%",
+    paddingTop: 20,
+    borderRadius: 25,
   },
 });
 
