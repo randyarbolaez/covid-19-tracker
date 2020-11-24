@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 
 import Color from "../constant/Color";
 
-const Statistics = ({ stats, country }) => {
+const Statistics = ({ stats }) => {
   let { cases = null, confirmed = null } = stats;
   let { deaths = null, recovered = null } = stats;
 
@@ -19,7 +19,6 @@ const Statistics = ({ stats, country }) => {
       <View
         style={{
           ...styles.wrapper,
-          flexWrap: country ? "wrap" : "nowrap",
         }}
       >
         <View
@@ -46,9 +45,6 @@ const Statistics = ({ stats, country }) => {
           style={{
             ...styles.wrapperContainer,
             backgroundColor: Color.teal,
-            marginTop: country ? 10 : 0,
-            width: country ? "50%" : 120,
-            alignItems: country ? "center" : "baseline",
           }}
         >
           <Text style={styles.wrapperTitle}>Recovered</Text>
@@ -67,13 +63,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
+    flexWrap: "wrap",
+    height: "60%",
+    marginHorizontal: 10,
   },
   wrapperContainer: {
-    height: 90,
-    width: 120,
+    height: "100%",
+    width: "40%",
     justifyContent: "space-around",
     paddingHorizontal: 12,
     borderRadius: 10,
+    marginTop: 10,
   },
   wrapperTitle: {
     fontSize: 16,
