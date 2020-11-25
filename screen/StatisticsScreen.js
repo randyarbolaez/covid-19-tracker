@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 
 import Dropdown from "../component/Dropdown";
@@ -6,12 +6,18 @@ import Chart from "../component/Chart";
 
 import Color from "../constant/Color";
 
-const StatisticsScreen = () => {
+const StatisticsScreen = (props) => {
+  const [nameOfLand, setNameOfLand] = useState("");
+  const [typeOfLand, setTypeOfLand] = useState("");
+  const callbackFunction = (nameInfo, landInfo) => {
+    setNameOfLand(nameInfo);
+    setTypeOfLand(landInfo);
+  };
   return (
     <View style={styles.container}>
-      <Dropdown />
+      <Dropdown parentCallback={callbackFunction} />
       <View style={styles.chart}>
-        <Chart />
+        <Chart nameOfLand={nameOfLand} typeOfLand={typeOfLand} />
       </View>
     </View>
   );

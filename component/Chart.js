@@ -1,217 +1,123 @@
-import React from "react";
-import { View, Alert } from "react-native";
-import { Grid, StackedBarChart, XAxis } from "react-native-svg-charts";
-import * as shape from "d3-shape";
+import React, { useState, useEffect } from "react";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { LineChart } from "react-native-chart-kit";
+import numeral from "numeral";
 
 import Color from "../constant/Color";
 
-const Chart = (props) => {
-  // const data = [
-  //   {
-  //     month: new Date(2015, 0, 1),
-  //     apples: 3840,
-  //     bananas: 1920,
-  //     cherries: 960,
-  //   },
-  //   {
-  //     month: new Date(2015, 1, 1),
-  //     apples: 1600,
-  //     bananas: 1440,
-  //     cherries: 960,
-  //   },
-  //   {
-  //     month: new Date(2015, 2, 1),
-  //     apples: 640,
-  //     bananas: 960,
-  //     cherries: 3640,
-  //   },
-  //   {
-  //     month: new Date(2015, 3, 1),
-  //     apples: 3320,
-  //     bananas: 480,
-  //     cherries: 640,
-  //   },
-  //   {
-  //     month: new Date(2015, 4, 1),
-  //     apples: 520,
-  //     bananas: 220,
-  //     cherries: 440,
-  //     svg: {
-  //       onPress: () => console.log("onPress => 3:tomato:400"),
-  //     },
-  //   },
-  // ];
-  // const colors = [Color.orange, Color.red, Color.teal];
-  // const keys = ["apples", "bananas", "cherries"];
-  // return (
-  //   <View
-  //     style={{
-  //       height: "80%",
-  //       width: "80%",
-  //       flexDirection: "row",
-  //     }}
-  //   >
-  //     <StackedBarChart
-  //       style={{ flex: 1, marginHorizontal: -10 }}
-  //       keys={keys}
-  //       xAccessor={({ item }) => item.month}
-  //       colors={colors}
-  //       data={data}
-  //       contentInset={{ top: 30, bottom: 30 }}
-  //       onPress={() => {
-  //         console.log("hello");
-  //       }}
-  //     >
-  //       <XAxis
-  //         style={{ marginHorizontal: -10 }}
-  //         data={data}
-  //         xAccessor={({ item }) => item.month}
-  //         formatLabel={(value, index) => {
-  //           console.log(value.toDateString());
-  //           return value.toISOString().split("T")[0];
-  //           return index;
-  //         }}
-  //         contentInset={{ left: 30, right: 30 }}
-  //         svg={{ fontSize: 10, fill: "black" }}
-  //       />
-  //     </StackedBarChart>
-  //   </View>
-  // );
+const Chart = ({ nameOfLand = "Alabama", typeOfLand = "state" }) => {
+  const [stateName, setStateName] = useState("");
+  const [dataInfo, setDataInfo] = useState(null);
+  const [dataLabels, setDataLabels] = useState([]);
+  const [dataDatasets, setDataDatasets] = useState([]);
 
-  const colors = ["#33691E", "#689F38", "#9CCC65", "#DCEDC8"];
-  const data = [
-    {
-      broccoli: {
-        value: 3840,
-        svg: {
-          onPress: () => {
-            Alert.alert("onPress => 0:broccoli:3840");
-            console.log("onPress => 0:broccoli:3840");
-          },
-        },
+  const formatData = (data) => {
+    if (nameOfLand == "USA") {
+      let object = data.timeline.cases;
+      let labels = [];
+      let values = [];
+      for (const property in object) {
+        labels.push(property.slice(0, -3));
+        values.push(object[property]);
+      }
+      setDataLabels(labels);
+      setDataDatasets(values);
+    } else {
+      let labels = [];
+      let values = [];
+      for (let i = 0; i < data.length; i++) {
+        if (stateName !== data[i].state && typeOfLand == "county") {
+          continue;
+        }
+        labels.push(data[i].date.substring(5).replace("-", "/"));
+        values.push(data[i].cases);
+      }
+      setDataLabels(labels);
+      setDataDatasets(values);
+    }
+  };
+
+  const getData = () => {
+    if (typeOfLand == "country") {
+      fetch(
+        `https://disease.sh/v3/covid-19/historical/${nameOfLand}?lastdays=7`
+      )
+        .then((res) => res.json())
+        .then((info) => formatData(info));
+    } else if (typeOfLand == "county") {
+      fetch(
+        `https://disease.sh/v3/covid-19/nyt/counties/${nameOfLand}?lastdays=7`
+      )
+        .then((res) => res.json())
+        .then((info) => formatData(info));
+    } else {
+      fetch(
+        `https://disease.sh/v3/covid-19/nyt/states/${nameOfLand}?lastdays=7`
+      )
+        .then((res) => res.json())
+        .then((info) => formatData(info));
+    }
+  };
+
+  useEffect(() => {
+    if (typeOfLand == "state") {
+      setStateName(nameOfLand);
+    }
+
+    return getData();
+  }, [nameOfLand, typeOfLand]);
+
+  const data = {
+    labels: dataLabels,
+    datasets: [
+      {
+        data: dataDatasets,
+        color: (opacity = 1) => `${Color.lightGrey}`,
+        strokeWidth: 1,
       },
-      celery: {
-        value: 1920,
-        svg: {
-          onPress: () => console.log("onPress => 0:celery:1920"),
-        },
-      },
-      onions: {
-        value: 960,
-        svg: {
-          onPress: () => console.log("onPress => 0:onions:960"),
-        },
-      },
-      tomato: {
-        value: 400,
-        svg: {
-          onPress: () => console.log("onPress => 0:tomato:400"),
-        },
-      },
-    },
-    {
-      broccoli: {
-        value: 1600,
-        svg: {
-          onPress: () => console.log("onPress => 1:broccoli:1600"),
-        },
-      },
-      celery: {
-        value: 1440,
-        svg: {
-          onPress: () => console.log("onPress => 1:celery:1440"),
-        },
-      },
-      onions: {
-        value: 960,
-        svg: {
-          onPress: () => console.log("onPress => 1:onions:960"),
-        },
-      },
-      tomato: {
-        value: 400,
-        svg: {
-          onPress: () => console.log("onPress => 1:tomato:400"),
-        },
-      },
-    },
-    {
-      broccoli: {
-        value: 640,
-        svg: {
-          onPress: () => console.log("onPress => 2:broccoli:640"),
-        },
-      },
-      celery: {
-        value: 960,
-        svg: {
-          onPress: () => console.log("onPress => 2:celery:960"),
-        },
-      },
-      onions: {
-        value: 3640,
-        svg: {
-          onPress: () => console.log("onPress => 2:onions:3640"),
-        },
-      },
-      tomato: {
-        value: 400,
-        svg: {
-          onPress: () => console.log("onPress => 2:tomato:400"),
-        },
-      },
-    },
-    {
-      broccoli: {
-        value: 3320,
-        svg: {
-          onPress: () => console.log("onPress => 3:broccoli:3320"),
-        },
-      },
-      celery: {
-        value: 480,
-        svg: {
-          onPress: () => console.log("onPress => 3:celery:480"),
-        },
-      },
-      onions: {
-        value: 640,
-        svg: {
-          onPress: () => console.log("onPress => 3:onions:640"),
-        },
-      },
-      tomato: {
-        value: 400,
-        svg: {
-          onPress: () => console.log("onPress => 3:tomato:400"),
-        },
-      },
-    },
-  ];
-  const keys = ["broccoli", "celery", "onions", "tomato"];
+    ],
+  };
+
   return (
-    <View style={{ height: 200, width: 200 }}>
-      <StackedBarChart
-        style={{ flex: 1 }}
-        colors={colors}
-        contentInset={{ top: 30, bottom: 30 }}
-        data={data}
-        keys={keys}
-        valueAccessor={({ item, key }) => item[key].value}
-      >
-        <Grid />
-      </StackedBarChart>
-      <XAxis
-        style={{ marginHorizontal: -10 }}
-        data={data}
-        formatLabel={(value, index) => {
-          return index;
-        }}
-        contentInset={{ left: 30, right: 30 }}
-        svg={{ fontSize: 10, fill: "black" }}
-      />
+    <View>
+      <Text style={styles.legend}>Daily Cases</Text>
+      {dataDatasets.length ? (
+        <LineChart
+          data={data}
+          width={350}
+          height={220}
+          chartConfig={{
+            decimalPlaces: 0,
+            backgroundGradientFrom: Color.white,
+            backgroundGradientTo: Color.white,
+            color: (opacity = 1) => `${Color.offBlack}`,
+            labelColor: (opacity = 1) => `${Color.offBlack}`,
+            propsForDots: {
+              r: "6",
+              fill: Color.blue,
+            },
+          }}
+          bezier
+          verticalLabelRotation={30}
+          withInnerLines={false}
+          withOuterLines={false}
+          formatYLabel={(value) => numeral(value).format("0.0a")}
+        />
+      ) : (
+        <ActivityIndicator size={"large"} color={Color.orange} />
+      )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  legend: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 16,
+    marginBottom: 5,
+    color: Color.blue,
+  },
+});
 
 export default Chart;

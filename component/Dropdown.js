@@ -6,7 +6,7 @@ import Statistics from "./Statistics";
 
 import Color from "../constant/Color";
 
-const Dropdown = () => {
+const Dropdown = (props) => {
   const [state, setState] = useState("Alabama");
   const [county, setCounty] = useState("Autauga");
   const [countyStats, setCountyStats] = useState("");
@@ -40,6 +40,9 @@ const Dropdown = () => {
     return getData();
   }, [state, county]);
 
+  useEffect(() => {
+    props.parentCallback(state, "state");
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.stateAndCountyDropdownWrapper}>
@@ -55,10 +58,12 @@ const Dropdown = () => {
             borderRadius: "50%",
           }}
           onValueChange={(itemValue, itemIndex) => {
+            setShowStats("state");
             setHighlightCounty(false);
             setHighlightState(true);
             setCounty(Data[itemValue][0]);
             setState(itemValue);
+            props.parentCallback(itemValue, "state");
           }}
           itemStyle={{
             height: 51,
@@ -94,9 +99,11 @@ const Dropdown = () => {
             fontSize: 30,
           }}
           onValueChange={(itemValue, itemIndex) => {
+            setShowStats("county");
             setHighlightCounty(true);
             setHighlightState(false);
             setCounty(itemValue);
+            props.parentCallback(itemValue, "county");
           }}
         >
           {Data[state].map((county) => {
@@ -113,7 +120,14 @@ const Dropdown = () => {
       </View>
       <View style={styles.statsWrapper}>
         <View style={styles.statsWrapperText}>
-          <TouchableOpacity onPress={() => setShowStats("state")}>
+          <TouchableOpacity
+            onPress={() => {
+              setHighlightCounty(false);
+              setHighlightState(true);
+              setShowStats("state");
+              props.parentCallback(state, "state");
+            }}
+          >
             <Text
               style={{
                 ...styles.statsText,
@@ -123,7 +137,14 @@ const Dropdown = () => {
               {state}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowStats("county")}>
+          <TouchableOpacity
+            onPress={() => {
+              setHighlightCounty(true);
+              setHighlightState(false);
+              setShowStats("county");
+              props.parentCallback(county, "county");
+            }}
+          >
             <Text
               style={{
                 ...styles.statsText,
@@ -133,7 +154,12 @@ const Dropdown = () => {
               {county}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowStats("country")}>
+          <TouchableOpacity
+            onPress={() => {
+              setShowStats("country");
+              props.parentCallback("USA", "country");
+            }}
+          >
             <Text
               style={{
                 ...styles.statsText,
