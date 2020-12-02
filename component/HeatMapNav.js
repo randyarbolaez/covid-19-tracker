@@ -23,15 +23,19 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+    justifyContent: "space-between",
     backgroundColor: "rgba(255, 255, 255, 0)",
     marginHorizontal: 20,
     alignItems: "baseline",
+    position: "absolute",
+    marginTop: 50,
   },
   title: {
     color: Color.white,
     fontSize: 18,
     fontWeight: "bold",
-    width: "60%",
+    width: "55%",
+    textAlign: "right",
   },
 });
 
