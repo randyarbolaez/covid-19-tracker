@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import MapView, { Heatmap } from "react-native-maps";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
+
+import locationData from "../constant/LocationData";
 
 const HeatMap = (props) => {
   const mapStyle = [
@@ -190,6 +192,12 @@ const HeatMap = (props) => {
     },
   ];
 
+  let newArray = JSON.parse(JSON.stringify(locationData));
+
+  for (let i = 0; i < newArray.length; i++) {
+    newArray[i].weight = Math.random();
+  }
+
   return (
     <View style={styles.container}>
       <MapView
@@ -197,15 +205,7 @@ const HeatMap = (props) => {
         provider="google"
         customMapStyle={mapStyle}
       >
-        <Heatmap
-          points={[
-            {
-              latitude: 25.761681,
-              longitude: -80.191788,
-              weight: 10,
-            },
-          ]}
-        />
+        <Heatmap points={[...newArray]} />
       </MapView>
     </View>
   );
