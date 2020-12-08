@@ -1,10 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import MapView, { Heatmap } from "react-native-maps";
-import { View, Text, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Dimensions,
+} from "react-native";
 
 import data from "../constant/HeatMapData";
 
 const HeatMap = (props) => {
+  const [loading, setLoading] = useState(true);
+  const [allCounties, setAllCounties] = useState([]);
+
   const mapStyle = [
     {
       elementType: "geometry",
@@ -192,21 +201,49 @@ const HeatMap = (props) => {
     },
   ];
 
+  const getData = () => {
+    fetch("https://disease.sh/v3/covid-19/jhucsse/counties")
+      .then((res) => res.json())
+      .then((stats) => setAllCounties(stats));
+  };
+
+  useEffect(() => {
+    return getData();
+  }, []);
+
+  let arrayWithWeight = JSON.parse(JSON.stringify(data));
+
+  for (let i = 0; i < arrayWithWeight.length; i++) {
+    if (!allCounties[i]) {
+      continue;
+    }
+    if (arrayWithWeight[i].county == allCounties[i].county) {
+      arrayWithWeight[i]["weight"] = Math.floor(
+        (allCounties[i].stats.confirmed / 50) %
+          allCounties[i].stats.confirmed.toString().length
+      );
+    }
+  }
+
   return (
     <View style={styles.container}>
-      <MapView
-        region={{
-          latitude: 22.413727943971796,
-          longitude: -104.64207574725151,
-          latitudeDelta: 120.43380914878938,
-          longitudeDelta: 91.45530290901661,
-        }}
-        style={styles.mapStyle}
-        provider="google"
-        customMapStyle={mapStyle}
-      >
-        <Heatmap points={[...data]} />
-      </MapView>
+      {!loading ? (
+        <ActivityIndicator size={"large"} />
+      ) : (
+        <MapView
+          region={{
+            latitude: 22.413727943971796,
+            longitude: -104.64207574725151,
+            latitudeDelta: 120.43380914878938,
+            longitudeDelta: 91.45530290901661,
+          }}
+          style={styles.mapStyle}
+          provider="google"
+          customMapStyle={mapStyle}
+        >
+          <Heatmap points={arrayWithWeight} />
+        </MapView>
+      )}
     </View>
   );
 };
