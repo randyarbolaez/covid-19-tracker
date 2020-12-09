@@ -217,13 +217,18 @@ const HeatMap = (props) => {
     if (!allCounties[i]) {
       continue;
     }
-    if (arrayWithWeight[i].county == allCounties[i].county) {
-      arrayWithWeight[i]["weight"] = Math.floor(
-        (allCounties[i].stats.confirmed / 50) %
-          allCounties[i].stats.confirmed.toString().length
-      );
+    let index = allCounties.findIndex(
+      (x) => x.county === arrayWithWeight[i].county
+    );
+
+    if (index !== -1) {
+      arrayWithWeight[i]["weight"] =
+        (allCounties[index].stats.confirmed +
+          arrayWithWeight[i]["population"]) %
+        12;
     }
   }
+  console.log(arrayWithWeight[0]["population"]);
 
   return (
     <View style={styles.container}>
