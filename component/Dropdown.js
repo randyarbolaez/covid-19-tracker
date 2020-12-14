@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  StyleSheet,
+} from "react-native";
 
 import { Picker } from "@react-native-picker/picker";
 
@@ -17,6 +23,7 @@ const Dropdown = (props) => {
   const [highlightState, setHighlightState] = useState(true);
   const [highlightCounty, setHighlightCounty] = useState(false);
   const [showStats, setShowStats] = useState("state");
+  const [userWantsToType, setUserWantsToType] = useState(false);
 
   const getCorrectCountyStats = (countiesWithTheSameName) => {
     for (let i = 0; i < countiesWithTheSameName.length; i++) {
@@ -48,80 +55,79 @@ const Dropdown = (props) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.stateAndCountyDropdownWrapper}>
-        <Picker
-          selectedValue={state}
-          style={{
-            backgroundColor: highlightState ? Color.white : Color.blue,
-            height: "100%",
-            width: "50%",
-            borderColor: Color.blue,
-            borderWidth: "4%",
-            borderRadius: "50%",
-          }}
-          onValueChange={(itemValue, itemIndex) => {
-            setShowStats("state");
-            setHighlightCounty(false);
-            setHighlightState(true);
-            setCounty(Data[itemValue][0]);
-            setState(itemValue);
-            props.parentCallback(itemValue, "state");
-          }}
-          itemStyle={{
-            height: 51,
-            fontSize: 30,
-          }}
-        >
-          {Object.keys(Data).map((state) => {
-            return (
-              <Picker.Item
-                label={state}
-                value={state}
-                key={state}
-                color={highlightState ? Color.blue : Color.white}
-              />
-            );
-          })}
-        </Picker>
-        <Picker
-          selectedValue={county}
-          style={{
-            display: "flex",
-            alignContent: "center",
-            backgroundColor: highlightCounty ? Color.white : Color.blue,
-            height: "100%",
-            width: "50%",
-            // paddingTop: "2%",
-            borderColor: Color.blue,
-            borderWidth: "4%",
-            borderRadius: "50%",
-          }}
-          itemStyle={{
-            height: 51,
-            fontSize: 30,
-            // width: 50,
-            color: "red",
-          }}
-          onValueChange={(itemValue, itemIndex) => {
-            setShowStats("county");
-            setHighlightCounty(true);
-            setHighlightState(false);
-            setCounty(itemValue);
-            props.parentCallback(itemValue, "county");
-          }}
-        >
-          {Data[state].map((county) => {
-            return (
-              <Picker.Item
-                label={county}
-                value={county}
-                key={county}
-                color={!highlightCounty ? Color.white : Color.blue}
-              />
-            );
-          })}
-        </Picker>
-      </View>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        delayLongPress={300}
+        onLongPress={() => setUserWantsToType(!userWantsToType)}
+        style={{ marginBottom: "-25%" }}
+      >
+        <View style={styles.stateAndCountyDropdownWrapper}>
+          {userWantsToType ? (
+            <TextInput
+              autoFocus={userWantsToType}
+              placeholder="...type location"
+              placeholderTextColor={Color.white}
+              style={styles.search}
+            />
+          ) : (
+            <>
+              <Picker
+                selectedValue={state}
+                style={{
+                  ...styles.picker,
+                  backgroundColor: highlightState ? Color.white : Color.blue,
+                }}
+                onValueChange={(itemValue, itemIndex) => {
+                  setShowStats("state");
+                  setHighlightCounty(false);
+                  setHighlightState(true);
+                  setCounty(Data[itemValue][0]);
+                  setState(itemValue);
+                  props.parentCallback(itemValue, "state");
+                }}
+                itemStyle={styles.pickerItem}
+              >
+                {Object.keys(Data).map((state) => {
+                  return (
+                    <Picker.Item
+                      label={state}
+                      value={state}
+                      key={state}
+                      color={highlightState ? Color.blue : Color.white}
+                    />
+                  );
+                })}
+              </Picker>
+              <Picker
+                selectedValue={county}
+                style={{
+                  ...styles.picker,
+                  backgroundColor: highlightCounty ? Color.white : Color.blue,
+                }}
+                itemStyle={styles.pickerItem}
+                onValueChange={(itemValue, itemIndex) => {
+                  setShowStats("county");
+                  setHighlightCounty(true);
+                  setHighlightState(false);
+                  setCounty(itemValue);
+                  props.parentCallback(itemValue, "county");
+                }}
+              >
+                {Data[state].map((county) => {
+                  return (
+                    <Picker.Item
+                      label={county}
+                      value={county}
+                      key={county}
+                      color={!highlightCounty ? Color.white : Color.blue}
+                    />
+                  );
+                })}
+              </Picker>
+            </>
+          )}
+        </View>
+      </TouchableOpacity>
       <View style={styles.statsWrapper}>
         <View style={styles.statsWrapperText}>
           <TouchableOpacity
@@ -200,11 +206,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: "90%",
-    height: "15%",
+    height: "30%",
     marginHorizontal: "5%",
     marginBottom: "10%",
     backgroundColor: Color.blue,
     borderRadius: 100,
+  },
+  search: { color: Color.white, fontWeight: "bold", fontSize: 30 },
+  picker: {
+    height: "100%",
+    width: "50%",
+    borderColor: Color.blue,
+    borderWidth: 4,
+    borderRadius: 100,
+  },
+  pickerItem: {
+    height: 51,
+    fontSize: 30,
   },
   statsWrapper: {
     height: "70%",
