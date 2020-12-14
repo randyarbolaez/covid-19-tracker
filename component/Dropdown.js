@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Picker, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+
+import { Picker } from "@react-native-picker/picker";
 
 import Data from "../constant/Data";
 import Statistics from "./Statistics";
@@ -43,6 +45,7 @@ const Dropdown = (props) => {
   useEffect(() => {
     props.parentCallback(state, "state");
   }, []);
+
   return (
     <View style={styles.container}>
       <View style={styles.stateAndCountyDropdownWrapper}>
@@ -52,7 +55,6 @@ const Dropdown = (props) => {
             backgroundColor: highlightState ? Color.white : Color.blue,
             height: "100%",
             width: "50%",
-            // paddingTop: "3%",
             borderColor: Color.blue,
             borderWidth: "4%",
             borderRadius: "50%",
@@ -97,6 +99,8 @@ const Dropdown = (props) => {
           itemStyle={{
             height: 51,
             fontSize: 30,
+            // width: 50,
+            color: "red",
           }}
           onValueChange={(itemValue, itemIndex) => {
             setShowStats("county");
@@ -213,9 +217,10 @@ const styles = StyleSheet.create({
     marginHorizontal: "10%",
   },
   statsText: {
-    fontSize: 18,
+    fontSize: 16,
     color: Color.offBlack,
     fontWeight: "bold",
+    paddingHorizontal: 20,
   },
   countryWrapper: {
     // marginTop: 10,
