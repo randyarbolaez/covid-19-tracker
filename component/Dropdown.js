@@ -6,12 +6,13 @@ import {
   TextInput,
   StyleSheet,
 } from "react-native";
-
 import { Picker } from "@react-native-picker/picker";
 
-import Data from "../constant/Data";
 import Statistics from "./Statistics";
+import SearchResults from "./SearchResults";
+import NoResults from "./NoResults";
 
+import Data from "../constant/Data";
 import Color from "../constant/Color";
 
 const Dropdown = (props) => {
@@ -24,6 +25,7 @@ const Dropdown = (props) => {
   const [highlightCounty, setHighlightCounty] = useState(false);
   const [showStats, setShowStats] = useState("state");
   const [userWantsToType, setUserWantsToType] = useState(false);
+  const [search, setSearch] = useState("");
 
   const getCorrectCountyStats = (countiesWithTheSameName) => {
     for (let i = 0; i < countiesWithTheSameName.length; i++) {
@@ -53,6 +55,35 @@ const Dropdown = (props) => {
     props.parentCallback(state, "state");
   }, []);
 
+  let searchableData = [];
+
+  let states = Object.keys(Data);
+
+  for (let i = 0; i < states.length; i++) {
+    for (let j = 0; j < Data[states[i]].length; j++) {
+      let stateAndCountyObjPair = {};
+      stateAndCountyObjPair[states[i]] = Data[states[i]][j];
+      searchableData.push(stateAndCountyObjPair);
+    }
+  }
+
+  let searchResultsData = searchableData.filter((data) => {
+    let state = Object.keys(data)[0];
+    let county = Object.values(data)[0];
+    return (
+      state.toLowerCase().includes(search.toLowerCase()) ||
+      county.toLowerCase().includes(search.toLowerCase())
+    );
+  });
+
+  const getStateAndCountyFromSearchFunction = (info) => {
+    let { state, county } = info;
+    setState(state);
+    setCounty(county);
+    setUserWantsToType(false);
+    setSearch("");
+  };
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -68,6 +99,8 @@ const Dropdown = (props) => {
               placeholder="...type location"
               placeholderTextColor={Color.white}
               style={styles.search}
+              value={search}
+              onChangeText={(text) => setSearch(text)}
             />
           ) : (
             <>
@@ -128,66 +161,75 @@ const Dropdown = (props) => {
           )}
         </View>
       </TouchableOpacity>
-      <View style={styles.statsWrapper}>
-        <View style={styles.statsWrapperText}>
-          <TouchableOpacity
-            onPress={() => {
-              setHighlightCounty(false);
-              setHighlightState(true);
-              setShowStats("state");
-              props.parentCallback(state, "state");
-            }}
-          >
-            <Text
-              style={{
-                ...styles.statsText,
-                color: showStats == "state" ? Color.white : Color.offBlack,
+      {searchResultsData.length !== 0 && userWantsToType ? (
+        <SearchResults
+          data={searchResultsData}
+          getStateAndCountyFromSearch={getStateAndCountyFromSearchFunction}
+        />
+      ) : searchResultsData == 0 ? (
+        <NoResults />
+      ) : (
+        <View style={styles.statsWrapper}>
+          <View style={styles.statsWrapperText}>
+            <TouchableOpacity
+              onPress={() => {
+                setHighlightCounty(false);
+                setHighlightState(true);
+                setShowStats("state");
+                props.parentCallback(state, "state");
               }}
             >
-              {state}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              setHighlightCounty(true);
-              setHighlightState(false);
-              setShowStats("county");
-              props.parentCallback(county, "county");
-            }}
-          >
-            <Text
-              style={{
-                ...styles.statsText,
-                color: showStats == "county" ? Color.white : Color.offBlack,
+              <Text
+                style={{
+                  ...styles.statsText,
+                  color: showStats == "state" ? Color.white : Color.offBlack,
+                }}
+              >
+                {state}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setHighlightCounty(true);
+                setHighlightState(false);
+                setShowStats("county");
+                props.parentCallback(county, "county");
               }}
             >
-              {county}
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              setShowStats("country");
-              props.parentCallback("USA", "country");
-            }}
-          >
-            <Text
-              style={{
-                ...styles.statsText,
-                color: showStats == "country" ? Color.white : Color.offBlack,
+              <Text
+                style={{
+                  ...styles.statsText,
+                  color: showStats == "county" ? Color.white : Color.offBlack,
+                }}
+              >
+                {county}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setShowStats("country");
+                props.parentCallback("USA", "country");
               }}
             >
-              USA
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  ...styles.statsText,
+                  color: showStats == "country" ? Color.white : Color.offBlack,
+                }}
+              >
+                USA
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {showStats == "state" ? (
+            <Statistics stats={stateStats} />
+          ) : showStats == "county" ? (
+            <Statistics stats={countyStats} />
+          ) : (
+            <Statistics stats={countryStats} />
+          )}
         </View>
-        {showStats == "state" ? (
-          <Statistics stats={stateStats} />
-        ) : showStats == "county" ? (
-          <Statistics stats={countyStats} />
-        ) : (
-          <Statistics stats={countryStats} />
-        )}
-      </View>
+      )}
     </View>
   );
 };
@@ -212,7 +254,16 @@ const styles = StyleSheet.create({
     backgroundColor: Color.blue,
     borderRadius: 100,
   },
-  search: { color: Color.white, fontWeight: "bold", fontSize: 30 },
+  search: {
+    color: Color.white,
+    fontWeight: "bold",
+    fontSize: 30,
+    width: "70%",
+    height: "100%",
+    textAlign: "center",
+    // backgroundColor: Color.lightGrey,
+    // borderRadius: 100,
+  },
   picker: {
     height: "100%",
     width: "50%",
