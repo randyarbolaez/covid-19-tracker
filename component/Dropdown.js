@@ -52,8 +52,8 @@ const Dropdown = (props) => {
   }, [state, county]);
 
   useEffect(() => {
-    props.parentCallback(state, "state");
-  }, []);
+    props.infoFromDropdownComponent(state, "state");
+  }, [state]);
 
   let searchableData = [];
 
@@ -82,22 +82,43 @@ const Dropdown = (props) => {
     setCounty(county);
     setUserWantsToType(false);
     setSearch("");
+    setShowStats("state");
+    props.showChart(userWantsToType);
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        ...styles.container,
+        height: userWantsToType ? "100%" : "63%",
+        borderBottomLeftRadius: userWantsToType ? 0 : 50,
+        borderBottomRightRadius: userWantsToType ? 0 : 50,
+      }}
+    >
       <TouchableOpacity
         activeOpacity={0.7}
         delayLongPress={300}
-        onLongPress={() => setUserWantsToType(!userWantsToType)}
-        style={{ marginBottom: "-25%" }}
+        onLongPress={() => {
+          setUserWantsToType(!userWantsToType);
+          props.showChart(userWantsToType);
+        }}
+        style={{
+          marginBottom: userWantsToType ? "-47%" : "-25%",
+        }}
       >
-        <View style={styles.stateAndCountyDropdownWrapper}>
+        <View
+          style={{
+            ...styles.stateAndCountyDropdownWrapper,
+            height: userWantsToType ? "23.5%" : "30%",
+            width: userWantsToType ? "80%" : "90%",
+            marginHorizontal: userWantsToType ? "10%" : "5%",
+          }}
+        >
           {userWantsToType ? (
             <TextInput
               autoFocus={userWantsToType}
-              placeholder="...type location"
-              placeholderTextColor={Color.white}
+              placeholder="Search"
+              placeholderTextColor={Color.lightGrey}
               style={styles.search}
               value={search}
               onChangeText={(text) => setSearch(text)}
@@ -116,7 +137,7 @@ const Dropdown = (props) => {
                   setHighlightState(true);
                   setCounty(Data[itemValue][0]);
                   setState(itemValue);
-                  props.parentCallback(itemValue, "state");
+                  props.infoFromDropdownComponent(itemValue, "state");
                 }}
                 itemStyle={styles.pickerItem}
               >
@@ -143,7 +164,7 @@ const Dropdown = (props) => {
                   setHighlightCounty(true);
                   setHighlightState(false);
                   setCounty(itemValue);
-                  props.parentCallback(itemValue, "county");
+                  props.infoFromDropdownComponent(itemValue, "county");
                 }}
               >
                 {Data[state].map((county) => {
@@ -176,7 +197,7 @@ const Dropdown = (props) => {
                 setHighlightCounty(false);
                 setHighlightState(true);
                 setShowStats("state");
-                props.parentCallback(state, "state");
+                props.infoFromDropdownComponent(state, "state");
               }}
             >
               <Text
@@ -193,7 +214,7 @@ const Dropdown = (props) => {
                 setHighlightCounty(true);
                 setHighlightState(false);
                 setShowStats("county");
-                props.parentCallback(county, "county");
+                props.infoFromDropdownComponent(county, "county");
               }}
             >
               <Text
@@ -208,7 +229,7 @@ const Dropdown = (props) => {
             <TouchableOpacity
               onPress={() => {
                 setShowStats("country");
-                props.parentCallback("USA", "country");
+                props.infoFromDropdownComponent("USA", "country");
               }}
             >
               <Text

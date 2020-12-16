@@ -10,9 +10,7 @@ const SearchResults = ({ data, getStateAndCountyFromSearch }) => {
 
   return (
     <FlatList
-      columnWrapperStyle={{ justifyContent: "center" }}
       horizontal={false}
-      numColumns={2}
       data={data}
       renderItem={(item) => (
         <SearchResultItem
